@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    </style>
+    <script>
+        function mapClass(classNum) {
+            const classMapping = {
+                2: '../static/cloudy.jpg',
+                4: '../static/foggy.jpg',
+                0: '../static/breezy.jpeg',
+                1: '../static/clear.jpg',
+                5: '../static/humid.jpg',
+                7: '../static/windy.jpg',
+                3: '../static/dry.jpg',
+                6: '../static/rain.jpg'
+            };
+            return classMapping[classNum];
+        }
+    </script>
+</head>
+<body style="background-image: url('../static/initial.jpeg');">
+    <form id="weather-form" action='/predict' method="POST">
+        temperature_C: <input type="text" name="temperature_C"><br>
+        apparent_temperature_C: <input type="text" name="apparent_temperature_C"><br>
+        humidity: <input type="text" name="humidity"><br>
+        wind_speed: <input type="text" name="wind_speed"><br>
+        wind_bearing_degrees: <input type="text" name="wind_bearing_degrees"><br>
+        visibilty_km: <input type="text" name="visibilty_km"><br>
+        loud_cover: <input type="text" name="loud_cover"><br>
+        pressure_milibars: <input type="text" name="pressure_milibars"><br>
+        precip_type: <input type="text" name="precip_type"><br>
+        year: <input type="text" name="year"><br>
+        month: <input type="text" name="month"><br>
+        day: <input type="text" name="day"><br>
+        hour: <input type="text" name="hour"><br>
+        
+        Class: <span id="result"></span> <br>
+        <input type='submit' value='Predict'>
+    </form>
+
+    <script>
+        // Get the result element
+        const resultElement = document.getElementById('result');
+
+        // Update the result element with the mapped class when the form is submitted
+        document.getElementById('weather-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent the form from submitting
+
+            // Make the request to the server
+            fetch('/predict', {
+                method: 'POST',
+                body: new FormData(this)
+            })
+            .then(response => response.text())
+            .then(result => {
+                // Update the result element with the mapped class
+                resultElement.innerText = result;
+
+                // Change the background image based on the predicted class
+                document.body.style.backgroundImage = `url(${mapClass(parseInt(result))})`;
+            });
+        });
+    </script>
+</body>
+</html>
